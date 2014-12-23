@@ -3,6 +3,7 @@ module.exports = {
         ignores: [
             "src/bower_components/**",
             "test/karma-coverage/**",
+            "src/build.js"
         ],
         // --------------------------------------------------------------------
         // JSHint Configuration, Strict Edition
