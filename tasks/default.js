@@ -3,6 +3,7 @@ module.exports = function(grunt) {
         'test',
         'jshint',
         'karma:coverage',
-        'jsdoc'
+        'jsdoc',
+        'metrics-size'
     ]);
 };
