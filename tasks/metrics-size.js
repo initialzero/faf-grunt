@@ -5,34 +5,88 @@ module.exports = function(grunt) {
 
         var conf = grunt.config(),
             module = conf.pkg.name,
-            buildOptions = conf.requirejs.optimize.options,
-            overlayName = conf.overlay + "/" + module + "-" + conf.pkg.overlayVersion + ".zip",
-            files = [];
+            dir = conf.requirejs.optimize.options.dir,
+            files = [],
+            metricsPath = "build/metrics/size.json";
 
-        if (["jrs-ui", "jrs-ui-pro"].indexOf(module) !== -1) {
-
-            files.push({
-                name: "snapshot",
-                size: fs.statSync(overlayName).size
-            });
-
-            buildOptions.modules.forEach(function(file) {
+         if ("visualize-js" === module) {
+            var visFile = "build/visualize.js";
+            if (fs.existsSync(visFile)) {
                 files.push({
-                    name: file.name,
-                    size: fs.statSync(buildOptions.dir + "/" + file.name + ".js").size
+                    name: "visualize.js",
+                    size: fs.statSync(visFile).size
                 });
-            });
-
-            if ("jrs-ui-pro" === module) {
-                files.push({
-                    name: "visualize",
-                    size: fs.statSync("build/optimized/bower_components/visualize-js/build/visualize.js").size
-                });
+            } else {
+                grunt.log.error("Failed to get file size: visualize.js");
             }
 
-            grunt.file.write("build/metrics/size.json", JSON.stringify(files));
+            grunt.file.write(metricsPath, JSON.stringify(files, null, " "));
 
+        } else if (["jrs-ui", "jrs-ui-pro"].indexOf(module) !== -1) {
+
+            var requireConfigFile = grunt.file.read('src/require.config.js'),
+                paths = (new Function("requirejs", "return " + requireConfigFile))({
+                    config: function(opts) {
+                        return opts.paths;
+                    }
+                }),
+                buildFile = grunt.file.read('src/build.js'),
+                buildModules = (new Function("return " + buildFile))().modules,
+                overlayName = conf.overlay + "/" + module + "-" + conf.pkg.overlayVersion + ".zip";
+
+            if (fs.existsSync(overlayName)) {
+                files.push({
+                    name: "overlay",
+                    size: fs.statSync(overlayName).size
+                });
+            } else {
+                grunt.log.error("Failed to get file size: " + overlayName);
+            }
+
+            buildModules.forEach(function(file) {
+                var size;
+                var fname = file.name + ".js";
+                if (fs.existsSync(dir + fname)) {
+                    size = tryLoadFile(dir + fname);
+                } else {
+                    size = tryLoadFile(normalize(dir, fname, paths));
+                }
+
+                if (!size) {
+                    grunt.log.error("Failed to get file size: " + fname);
+                } else {
+                    files.push({
+                        name: fname,
+                        size: size
+                    });
+                }
+            });
+            grunt.file.write(metricsPath, JSON.stringify(files, null, " "));
         }
     });
 };
 
+function normalize(dir, file, paths) {
+    var res;
+
+    for (var i in paths) {
+        if (!paths.hasOwnProperty(i)) {
+            continue;
+        }
+
+        if (file.search(i) === 0) {
+            res = file.replace(i, paths[i]);
+            if (fs.existsSync(dir + res)) {
+                return dir + res;
+            }
+        }
+    }
+}
+
+function tryLoadFile(path) {
+    if (fs.existsSync(path)) {
+        return fs.statSync(path).size;
+    } else {
+        return false;
+    }
+}
