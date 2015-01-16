@@ -1,17 +1,14 @@
 {
-  "name": "js-faf-grunt-tasks",
+  "name": "faf-grunt",
   "version": "0.0.1",
   "description": "Set of tasks and configuration options for Grunt for JasperSoft FAF environment",
-  "main": "js-faf-grunt-tasks.js",
+  "main": "faf-grunt.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tsareg/js-faf-grunt-tasks.git"
+    "url": "https://github.com/Jaspersoft/faf-grunt"
   },
   "author": "tsareg",
-  "bugs": {
-    "url": "https://github.com/tsareg/js-faf-grunt-tasks/issues"
-  },
-  "homepage": "https://github.com/tsareg/js-faf-grunt-tasks",
+  "homepage": "https://github.com/Jaspersoft/faf-grunt",
   "devDependencies": {
     "grunt": "^0.4.5"
   },

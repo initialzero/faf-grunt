@@ -1,2 +1,2 @@
-js-faf-grunt-tasks
+faf-grunt
 ==================
