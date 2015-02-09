@@ -5,6 +5,9 @@ module.exports = {
         ]
     },
     options: {
+        "ignores": [
+            "test/karma-coverage/**"
+        ],
         "predef": [
             "define",
             "expect",
