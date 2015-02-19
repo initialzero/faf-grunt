@@ -4,7 +4,6 @@ module.exports = function(grunt) {
     grunt.registerTask('metrics-size', 'Collect size of source files', function () {
 
         var visFile = "build/client/visualize.js",
-            jasperFile = "build/client/jasper.js",
             conf = grunt.config(),
             module = conf.pkg.name,
             dir = "build/optimized/",
@@ -31,14 +30,6 @@ module.exports = function(grunt) {
                     });
                 } else {
                     grunt.log.error("Failed to get file size: visualize.js");
-                }
-                if (fs.existsSync(jasperFile)) {
-                    files.push({
-                        name: "jasper.js",
-                        size: fs.statSync(jasperFile).size
-                    });
-                } else {
-                    grunt.log.error("Failed to get file size: jasper.js");
                 }
             }
 
