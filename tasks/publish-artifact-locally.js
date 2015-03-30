@@ -2,18 +2,20 @@ var fs = require('fs'),
 	spawn = require('child_process').spawn,
 	mvn = function(opts){
 
-		var args = ['install:install'],
+		var args = ['install:install-file'],
 			opts = opts ? opts : {};
 
 		args = Object.keys(opts).reduce(function(memo, argName){
 			var argVal = opts[argName],
-				newArg = '-D{name}={val} '
+				newArg = '-D{name}={val}'
 							.replace('{name}', argName)
 							.replace('{val}', argVal);
 
 				memo.push(newArg);
 			return memo;
 		}, args);
+
+		console.log(args);
 
 		return spawn('mvn', args);
 	};
@@ -35,13 +37,15 @@ module.exports = function(grunt) {
     		if (!fs.existsSync(artifact)){
     			grunt.log.error('Can\'t find artifact in ' + artifact);
     			done(false);
-    		}	
+    		}
+
+    		//add manually POM and hardcode versions in 	
 
     		var mvnInstall = mvn({
     			file : artifact,
-    			groupId: "org.some.group",
-    			artifactId: "your-artifact",
-    			version : "0.0.1",
+    			groupId: "com.jaspersoft",
+    			artifactId: "jrs-ui-pro",
+    			version : "1.8.0-foo-SNAPSHOT",
     			packaging: "zip"
     		});
 
