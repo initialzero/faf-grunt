@@ -3,7 +3,8 @@ var fs = require('fs'),
 	mvn = function(opts){
 
 		var args = ['install:install-file'],
-			opts = opts ? opts : {};
+			opts = opts ? opts : {},
+            result;
 
 		args = Object.keys(opts).reduce(function(memo, argName){
 			var argVal = opts[argName],
@@ -15,66 +16,64 @@ var fs = require('fs'),
 			return memo;
 		}, args);
 
-		console.log(args);
-
+        //TODO: replace with 'exec'
 		return spawn('mvn', args);
 	};
 
 
 module.exports = function(grunt) {
+
     grunt.registerTask('publish-artifact-locally','Publish prepared artifact to local maven repository', function(){
 
-    		var artifact = grunt.config.process(
-				grunt.config
-					.get('compress')
-					.overlay
-					.options
-					.archive
-    			),
-    			error = grunt.log.error,
+    		var process = grunt.config.process,
+    			artifact = process(
+					grunt.config
+						.get('compress')
+						.overlay
+						.options
+						.archive
+    			), install,
+    			error = grunt.log.error,		
     			done = this.async();
 
     		if (!fs.existsSync(artifact)){
-    			grunt.log.error('Can\'t find artifact in ' + artifact);
+    			grunt.fail.warn('Can\'t find artifact in ' + artifact);
     			done(false);
-    		}
+    		}else{
+                install = mvn({
+                    file : artifact,
+                    groupId: process(
+                        '<%= compress.overlay.options.groupId %>'
+                    ),
+                    //TODO: work on that case, it fails 'default' task
+                    artifactId: process('<%= pkg.name %>' + "aaa"),
+                    version : process(
+                        '<%= compress.overlay.options.version %>'
+                    ),
+                    packaging: "zip"
+                });
 
-    		//add manually POM and hardcode versions in 	
+                install.on('error', function(err){
+                    grunt.fail.warn('Can\'t execute \'mvn\'.');
+                    done(false);
+                });
 
-    		var mvnInstall = mvn({
-    			file : artifact,
-    			groupId: "com.jaspersoft",
-    			artifactId: "jrs-ui-pro",
-    			version : "1.8.0-foo-SNAPSHOT",
-    			packaging: "zip"
-    		});
 
-    		// mvnInstall.stderr.on('data', function(){
-    			
-    		// });
 
-    		mvnInstall.
-	    		stdout
-		    		.on('data', function(data){
-		    			grunt.log.write(data);	
-		    		})
-		    		.on('end', function(data){
-		    			done();
-	    			});
+                install
+                    .stdout
+                    .on('data', function(data){
+                        grunt.log.write(data); 
+                        // if (data.indexOf('BUILD FAILED') !== -1){
+                        //     grunt.fail.warn(
+                        //         'Can\'t install local maven artifact.'
+                        //     );
+                        //  }
+                         done();
+                    });
 
-		    mvnInstall.on('close', function(code){
-  				console.log('child process exited with code ' + code );
-  				if (code === 1){
-    				done(false);
-  				}
-			});
+            }
 
-    		console.log(artifact);
-    		// check if overlay exists
-    		// run maven on it
-    		//  done or say what's wrong
-
-    		//*imporove overlay to take version from 'version'
     });
 };
 
