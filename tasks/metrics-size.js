@@ -3,26 +3,14 @@ var fs = require("fs");
 module.exports = function(grunt) {
     grunt.registerTask('metrics-size', 'Collect size of source files', function () {
 
-        var conf = grunt.config(),
+        var visFile = "build/optimized/client/visualize.js",
+            conf = grunt.config(),
             module = conf.pkg.name,
-            dir = conf.requirejs.optimize.options.dir,
+            dir = "build/optimized/",
             files = [],
             metricsPath = "build/metrics/size.json";
 
-         if ("visualize-js" === module) {
-            var visFile = "build/visualize.js";
-            if (fs.existsSync(visFile)) {
-                files.push({
-                    name: "visualize.js",
-                    size: fs.statSync(visFile).size
-                });
-            } else {
-                grunt.log.error("Failed to get file size: visualize.js");
-            }
-
-            grunt.file.write(metricsPath, JSON.stringify(files, null, " "));
-
-        } else if (["jrs-ui", "jrs-ui-pro"].indexOf(module) !== -1) {
+        if (["jrs-ui", "jrs-ui-pro"].indexOf(module) !== -1) {
 
             var requireConfigFile = grunt.file.read('src/require.config.js'),
                 paths = (new Function("requirejs", "return " + requireConfigFile))({
@@ -33,6 +21,17 @@ module.exports = function(grunt) {
                 buildFile = grunt.file.read('src/build.js'),
                 buildModules = (new Function("return " + buildFile))().modules,
                 overlayName = conf.overlay + "/" + module + "-" + conf.pkg.overlayVersion + ".zip";
+
+            if (module === "jrs-ui-pro") {
+                if (fs.existsSync(visFile)) {
+                    files.push({
+                        name: "visualize.js",
+                        size: fs.statSync(visFile).size
+                    });
+                } else {
+                    grunt.log.error("Failed to get file size: visualize.js");
+                }
+            }
 
             if (fs.existsSync(overlayName)) {
                 files.push({

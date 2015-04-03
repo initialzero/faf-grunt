@@ -5,7 +5,6 @@ var requireMerge = require('requirejs-config-merge'),
         'bi-control',
         'bi-repo',
         'bi-dashboard',
-        'visualize-js',
         'jrs-ui'
     ];
 

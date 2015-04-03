@@ -1,6 +1,6 @@
 {
   "name": "faf-grunt",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "Set of tasks and configuration options for Grunt for JasperSoft FAF environment",
   "main": "faf-grunt.js",
   "repository": {
