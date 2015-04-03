@@ -29,6 +29,7 @@ module.exports = function(grunt) {
     }
 
     grunt.registerTask('copy-themes-overlay', 'Copy themes from modules to overlay', function(){
+        var currentModule = grunt.config().pkg.name;
 
         modules.forEach(function(module) {
             var path = moduleDir + module + "/themes";
@@ -36,7 +37,14 @@ module.exports = function(grunt) {
                 copyModuleThemes(moduleDir + module + "/themes", module);
             }
         });
-        copyModuleThemes("themes", "jrs-ui");
-        grunt.config().pkg.name === "jrs-ui-pro" && copyModuleThemes("themes", "jrs-ui-pro");
+
+        if (currentModule === "jrs-ui") {
+            copyModuleThemes("themes", "jrs-ui");
+        }
+        if (currentModule === "jrs-ui-pro") {
+            copyModuleThemes(moduleDir + "jrs-ui/themes", "jrs-ui");
+            copyModuleThemes("themes", "jrs-ui-pro");
+        }
+
     });
 };
