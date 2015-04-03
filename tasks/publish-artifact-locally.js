@@ -1,6 +1,6 @@
 var fs = require('fs'),
-	spawn = require('child_process').spawn,
-	mvn = function(opts){
+	exec = require('child_process').exec,
+    install = function(opts, cb){
 
 		var args = ['install:install-file'],
 			opts = opts ? opts : {},
@@ -16,8 +16,7 @@ var fs = require('fs'),
 			return memo;
 		}, args);
 
-        //TODO: replace with 'exec'
-		return spawn('mvn', args);
+		return exec('mvn ' + args.join(' '), cb);
 	};
 
 
@@ -32,7 +31,7 @@ module.exports = function(grunt) {
 						.overlay
 						.options
 						.archive
-    			), install,
+    			),
     			error = grunt.log.error,		
     			done = this.async();
 
@@ -40,43 +39,44 @@ module.exports = function(grunt) {
     			grunt.fail.warn('Can\'t find artifact in ' + artifact);
     			done(false);
     		}else{
-                install = mvn({
+
+                var options = {
                     file : artifact,
                     groupId: process(
                         '<%= compress.overlay.options.groupId %>'
                     ),
-                    //TODO: work on that case, it fails 'default' task
-                    artifactId: process('<%= pkg.name %>' + "aaa"),
+                    artifactId: process('<%= pkg.name %>'),
                     version : process(
                         '<%= compress.overlay.options.version %>'
                     ),
                     packaging: "zip"
+                };
+
+                install(options, function(err, stdout){
+
+                    var fail = function(){
+                         done(false);   
+                    };
+
+                    if (err){
+                        grunt.fail.warn('Can\'t execute \'mvn\'.');
+                        fail();
+                    }else{
+                        var output = stdout ? stdout.toString() : '';
+
+                        grunt.log.write(output);
+
+                        if (output.indexOf('BUILD FAILED') !== -1){
+                             grunt.fail.warn(
+                                 'Can\'t install local maven artifact.'
+                             );
+                             fail();
+                        }
+                    }
+                    done();
                 });
-
-                install.on('error', function(err){
-                    grunt.fail.warn('Can\'t execute \'mvn\'.');
-                    done(false);
-                });
-
-
-
-                install
-                    .stdout
-                    .on('data', function(data){
-                        grunt.log.write(data); 
-                        // if (data.indexOf('BUILD FAILED') !== -1){
-                        //     grunt.fail.warn(
-                        //         'Can\'t install local maven artifact.'
-                        //     );
-                        //  }
-                         done();
-                    });
 
             }
 
     });
 };
-
-
-
-//mvn install:install -Dfile=/path/your-artifact-1.0.zip -DgroupId=org.some.group -DartifactId=your-artifact -Dversion=1.0 -Dpackaging=zip" to default grunt sequence to install faf zip locally to ~/.m2 folder
