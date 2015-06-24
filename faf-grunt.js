@@ -1,5 +1,6 @@
 var glob = require('glob'),
-    merge = require("merge");
+    merge = require('merge'),
+    path = require('path');
 
 function extendConfig(config, path, grunt) {
     var getContent = {
@@ -7,7 +8,9 @@ function extendConfig(config, path, grunt) {
         json: grunt.file.readJSON
     };
     try {
-        glob.sync('*.js?(on)', {cwd: path}).forEach(function (option) {
+        glob.sync('*.js?(on)', {
+            cwd: path
+        }).forEach(function(option) {
             var type = option.split(".").pop(),
                 parts = option.replace(/\.json|.js$/, '').split("-"),
                 obj = level = {};
@@ -19,14 +22,14 @@ function extendConfig(config, path, grunt) {
 
             config = merge.recursive(true, config, obj);
         });
-    } catch(ex) {
+    } catch (ex) {
         grunt.log.writeln("Cannot read grunt config options: " + ex);
     }
 
     return config;
 }
 
-module.exports = function (grunt, options) {
+module.exports = function(grunt, options) {
     options = options || {};
 
     if (!options.cwd) {
@@ -37,7 +40,7 @@ module.exports = function (grunt, options) {
 
     try {
         grunt.loadTasks(options.cwd + '/tasks');
-    } catch(ex) {
+    } catch (ex) {
         grunt.log.writeln("Cannot load tasks from working dir: " + ex);
     }
 
@@ -61,6 +64,39 @@ module.exports = function (grunt, options) {
 
     config = extendConfig(config, __dirname + '/tasks/options/', grunt);
     config = extendConfig(config, options.cwd + '/tasks/options/', grunt);
+
+    // config['ftp-deploy'] = {
+    //     themes: {
+    //         auth: {
+    //             host: 'localhost',
+    //             port: 21,
+    //             authKey: 'myServer'
+    //         },
+    //         src: ['package.json'],
+    //         dest: '/project/helloworld/hello-ftp'
+    //     }
+    // };
+
+    // config['ftp_push'] = {
+    //     your_target: {
+    //         options: {
+    //             // authKey: "myServer",
+    //             username: "Igor Nesterenko",
+    //             password: "sh1shka",
+    //             host: "localhost",
+    //             dest: "/projects/helloworld/hello-ftp",
+    //             port: 21
+    //         },
+    //         files: [{
+    //             expand: true,
+    //             cwd: '.',
+    //             src: [
+    //                 "package.json"
+    //             ]
+    //         }]
+    //     }
+    // };
+
 
     grunt.initConfig(config);
 };
