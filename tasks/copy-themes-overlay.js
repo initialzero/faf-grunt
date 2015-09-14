@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
     var overlayThemesDir = "build/overlay/themes",
-        moduleDir = "src/bower_components/",
+        modulesDir = "src/bower_components/",
         modules = [
             "js-sdk",
             "bi-control",
@@ -9,22 +9,10 @@ module.exports = function(grunt) {
             "bi-dashboard"
         ];
 
-    function copyModuleThemes(path, module) {
+    function copyModuleThemes(path) {
         grunt.file.recurse(path, function(abspath, rootdir, subdir, filename) {
-
-            if (typeof subdir === "undefined") {
-                // copy files from <module>/themes/*.* to overlay/themes/
-                grunt.file.copy(abspath, overlayThemesDir + "/" + filename);
-            } else {
-                // copy files from <module>/themes/<theme> to overlay/themes/<theme>/<module>
-                if (module !== "jrs-ui" && module !== "jrs-ui-pro") {
-                    subdir = subdir.split("/");
-                    subdir.splice(1, 0, module);
-                    subdir = subdir.join("/");
-                }
-
-                grunt.file.copy(abspath, [overlayThemesDir, subdir, filename].join("/"));
-            }
+            var targetFile = overlayThemesDir + "/" + (subdir ? subdir + "/" : "") + filename;
+            grunt.file.copy(abspath, targetFile);
         });
     }
 
@@ -32,18 +20,18 @@ module.exports = function(grunt) {
         var currentModule = grunt.config().pkg.name;
 
         modules.forEach(function(module) {
-            var path = moduleDir + module + "/themes";
+            var path = modulesDir + module + "/themes";
             if (grunt.file.isDir(path)) {
-                copyModuleThemes(moduleDir + module + "/themes", module);
+                copyModuleThemes(path);
             }
         });
 
         if (currentModule === "jrs-ui") {
-            copyModuleThemes("themes", "jrs-ui");
+            copyModuleThemes("themes");
         }
         if (currentModule === "jrs-ui-pro") {
-            copyModuleThemes(moduleDir + "jrs-ui/themes", "jrs-ui");
-            copyModuleThemes("themes", "jrs-ui-pro");
+            copyModuleThemes(modulesDir + "jrs-ui/themes");
+            copyModuleThemes("themes");
         }
 
     });

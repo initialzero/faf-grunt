@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
     var overlayBundlesDir = "build/overlay/WEB-INF/bundles",
-        moduleDir = "src/bower_components/",
+        modulesDir = "src/bower_components/",
         modules = [
             "js-sdk",
             "bi-control",
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
         var currentModule = grunt.config().pkg.name;
 
         modules.forEach(function(module) {
-            var path = moduleDir + module + "/bundles";
+            var path = modulesDir + module + "/bundles";
             if (grunt.file.isDir(path)) {
                 copyModuleBundles(path);
             }
@@ -30,7 +30,7 @@ module.exports = function(grunt) {
             copyModuleBundles("bundles");
         }
         if (currentModule === "jrs-ui-pro") {
-            copyModuleBundles(moduleDir + "jrs-ui/bundles");
+            copyModuleBundles(modulesDir + "jrs-ui/bundles");
             copyModuleBundles("themes");
         }
 
