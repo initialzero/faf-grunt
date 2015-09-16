@@ -4,6 +4,7 @@ module.exports = function(grunt) {
         'jshint',
         'karma:coverage',
         'jsdoc',
+        'metalsmith:default',
         'metrics-size'
     ]);
 };

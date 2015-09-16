@@ -1,7 +1,7 @@
 module.exports = {
     options: {
         private: false,
-        destination: 'jsdoc',
+        destination: 'build/jsdoc',
         configure: 'jsdoc.conf.json'
     }
 };
