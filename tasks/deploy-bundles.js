@@ -8,6 +8,8 @@ module.exports = function (grunt) {
             return;
         }
 
+        (pathToServer.substr(-1) === "/") || (pathToServer += "/");
+
         var dest = pathToServer + "WEB-INF/bundles",
             modulesDir = "src/bower_components/",
             modules = [
