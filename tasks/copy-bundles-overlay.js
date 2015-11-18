@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-    var overlayThemesDir = "build/overlay/themes",
+    var overlayBundlesDir = "build/overlay/WEB-INF/bundles",
         modulesDir = "src/bower_components/",
         modules = [
             "js-sdk",
@@ -9,29 +9,29 @@ module.exports = function(grunt) {
             "bi-dashboard"
         ];
 
-    function copyModuleThemes(path) {
+    function copyModuleBundles(path) {
         grunt.file.recurse(path, function(abspath, rootdir, subdir, filename) {
-            var targetFile = overlayThemesDir + "/" + (subdir ? subdir + "/" : "") + filename;
+            var targetFile = overlayBundlesDir + "/" + (subdir ? subdir + "/" : "") + filename;
             grunt.file.copy(abspath, targetFile);
         });
     }
 
-    grunt.registerTask('copy-themes-overlay', 'Copy themes from modules to overlay', function(){
+    grunt.registerTask('copy-bundles-overlay', 'Copy bundles from modules to overlay', function(){
         var currentModule = grunt.config().pkg.name;
 
         modules.forEach(function(module) {
-            var path = modulesDir + module + "/themes";
+            var path = modulesDir + module + "/bundles";
             if (grunt.file.isDir(path)) {
-                copyModuleThemes(path);
+                copyModuleBundles(path);
             }
         });
 
         if (currentModule === "jrs-ui") {
-            copyModuleThemes("themes");
+            copyModuleBundles("bundles");
         }
         if (currentModule === "jrs-ui-pro") {
-            copyModuleThemes(modulesDir + "jrs-ui/themes");
-            copyModuleThemes("themes");
+            copyModuleBundles(modulesDir + "jrs-ui/bundles");
+            copyModuleBundles("themes");
         }
 
     });
