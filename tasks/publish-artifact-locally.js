@@ -49,7 +49,8 @@ module.exports = function(grunt) {
                     version : process(
                         '<%= compress.overlay.options.version %>'
                     ),
-                    packaging: "zip"
+                    packaging: "zip",
+                    generatePom: "true"
                 };
 
                 install(options, function(err, stdout){
