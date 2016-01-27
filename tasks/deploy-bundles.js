@@ -15,7 +15,7 @@ module.exports = function (grunt) {
             modules = [
                 "js-sdk",
                 "bi-control",
-                "bi-repository",
+                "bi-repo",
                 "bi-report",
                 "bi-dashboard"
             ];
