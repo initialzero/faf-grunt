@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         }
         if (currentModule === "jrs-ui-pro") {
             copyModuleBundles(modulesDir + "jrs-ui/bundles");
-            copyModuleBundles("themes");
+            copyModuleBundles("bundles");
         }
 
     });
