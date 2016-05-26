@@ -3,7 +3,7 @@ var requireMerge = require('requirejs-config-merge'),
         'js-sdk',
         'bi-report',
         'bi-control',
-        'bi-repo',
+        'bi-repository',
         'bi-dashboard',
         'jrs-ui'
     ];
