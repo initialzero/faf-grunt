@@ -10,10 +10,12 @@ module.exports = function(grunt) {
         ];
 
     function copyModuleBundles(path) {
-        grunt.file.recurse(path, function(abspath, rootdir, subdir, filename) {
-            var targetFile = overlayBundlesDir + "/" + (subdir ? subdir + "/" : "") + filename;
-            grunt.file.copy(abspath, targetFile);
-        });
+        if (grunt.file.isDir(path)) {
+            grunt.file.recurse(path, function(abspath, rootdir, subdir, filename) {
+                var targetFile = overlayBundlesDir + "/" + (subdir ? subdir + "/" : "") + filename;
+                grunt.file.copy(abspath, targetFile);
+            });
+        }
     }
 
     grunt.registerTask('copy-bundles-overlay', 'Copy bundles from modules to overlay', function(){
@@ -21,9 +23,7 @@ module.exports = function(grunt) {
 
         modules.forEach(function(module) {
             var path = modulesDir + module + "/bundles";
-            if (grunt.file.isDir(path)) {
-                copyModuleBundles(path);
-            }
+            copyModuleBundles(path);
         });
 
         if (currentModule === "jrs-ui") {
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         }
         if (currentModule === "jrs-ui-pro") {
             copyModuleBundles(modulesDir + "jrs-ui/bundles");
-            copyModuleBundles("themes");
+            copyModuleBundles("bundles");
         }
 
     });
