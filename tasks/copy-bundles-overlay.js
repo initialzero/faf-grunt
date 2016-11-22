@@ -7,6 +7,7 @@ module.exports = function(grunt) {
             "bi-chart",
             "bi-repository",
             "bi-report",
+            "bi-adhoc",
             "bi-dashboard"
         ];
 
