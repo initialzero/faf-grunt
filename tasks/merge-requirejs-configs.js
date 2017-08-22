@@ -6,6 +6,7 @@ var requireMerge = require('requirejs-config-merge'),
         "bi-chart",
         'bi-repository',
         'bi-dashboard',
+        'bi-adhoc',
         'jrs-ui'
     ];
 
